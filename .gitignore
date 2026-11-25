@@ -169,3 +169,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# lead-agent local data
+.data/
+*.db
+.streamlit/secrets.toml

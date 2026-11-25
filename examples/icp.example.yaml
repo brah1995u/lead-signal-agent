@@ -1,0 +1,16 @@
+# Who you sell to. The agent turns this into search queries and scores every post against it.
+product: >
+  An AI customer-support agent that answers from the company's help center, opens tickets and hands
+  conversations over to human agents.
+customers: SaaS and e-commerce companies with 5-200 employees and a small support team
+buying_signals:
+  - drowning in support tickets
+  - looking for a helpdesk or support tool
+  - Zendesk or Intercom is too expensive
+  - want to automate customer support with AI
+exclude:
+  - people promoting their own chatbot or AI product
+  - job seekers and freelancers offering services
+  - academic or hobby projects
+min_score: 60
+days: 30
