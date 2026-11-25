@@ -73,15 +73,16 @@ if submitted:
             sources.append(FirecrawlSource(key, sites=[s.strip() for s in sites.split(",") if s.strip()]))
         else:
             st.warning("Set FIRECRAWL_API_KEY to use web search.")
-    try:
-        llm = select_llm(None if provider == "auto" else provider)
-        with st.status(f"Running with {llm.model}…", expanded=True) as status:
+    llm = select_llm(None if provider == "auto" else provider)
+    with st.status(f"Running with {llm.model}…", expanded=True) as status:
+        try:
             report = run(icp, sources, llm, store, per_query=per_query, progress=st.write)
             status.update(label=f"Done: {report.new} new signals, {report.judged} scored", state="complete")
-        for error in report.errors:
-            st.warning(error)
-    except LLMError as error:
-        st.error(f"Model error: {error}")
+            for error in report.errors:
+                st.warning(error)
+        except LLMError as error:
+            status.update(label="Stopped: the model is not available", state="error")
+            st.error(f"Model error: {error}")
 
 leads = store.leads(min_score=0, limit=500)
 counts = store.counts()
