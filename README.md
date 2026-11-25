@@ -51,10 +51,10 @@ uv run lead-agent eval                                  # precision / recall on 
 ## Tests
 
 ```bash
-uv run pytest -q     # 15 tests, no network
+uv run pytest -q     # 16 tests, no network
 ```
 
-They cover the Hacker News source (HTTP mocked), HTML cleaning, SQLite dedupe and lead ordering, query planning, batched qualification (unknown ids, clamping not-relevant posts, fallback to single posts), the OpenAI-compatible client (code fences, retry with the validation error, server errors), the full pipeline including "no re-judging on the second run" and a failing source, CSV export and the eval metrics. CI runs ruff and pytest on every push.
+They cover the Hacker News source (HTTP mocked), HTML cleaning, SQLite dedupe and lead ordering, query planning, batched qualification (unknown ids, clamping not-relevant posts, fallback to single posts), the OpenAI-compatible client (code fences, retry with the validation error, server errors), the full pipeline including "no re-judging on the second run" and a failing source, CSV export and the eval metrics, plus model errors being reported once instead of failing silently.
 
 ## What changed
 
@@ -67,7 +67,7 @@ They cover the Hacker News source (HTTP mocked), HTML cleaning, SQLite dedupe an
 | LLM | OpenAI via phidata | Claude (Anthropic SDK, structured outputs) or any OpenAI-compatible server (Ollama, OpenAI) |
 | Output | An LLM agent writes Google Sheets through Composio | Deterministic CSV / Google Sheets export, CLI table, Streamlit table with filters |
 | State | None, every run starts over | SQLite: dedupe across runs, history of scores |
-| Quality | No tests | 15 tests, labeled eval set, CI |
+| Quality | No tests | 16 tests, labeled eval set, ruff |
 | Keys needed to start | Firecrawl + OpenAI + Composio | None (Ollama) or one (Anthropic) |
 
 ## Responsible use
