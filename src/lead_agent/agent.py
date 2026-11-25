@@ -46,21 +46,26 @@ def _post_block(s: Signal) -> dict:
     return {"id": s.id, "title": s.title, "text": s.text[:1500], "source": s.source}
 
 
-def qualify(signals: Iterable[Signal], icp: ICP, llm: LLM, batch_size: int = 8) -> Iterator[Qualification]:
+def qualify(
+    signals: Iterable[Signal], icp: ICP, llm: LLM, batch_size: int = 8, errors: list[str] | None = None
+) -> Iterator[Qualification]:
     """Judges signals in batches. Results the model invents for unknown ids are dropped, and a
     batch that fails is retried one post at a time so one bad post doesn't lose the batch."""
     items = list(signals)
     for batch in _batches(items, batch_size):
         try:
             yield from _judge(batch, icp, llm)
-        except LLMError:
+        except LLMError as error:
+            if errors is not None:
+                errors.append(str(error))
             if len(batch) == 1:
                 continue
             for single in batch:
                 try:
                     yield from _judge([single], icp, llm)
-                except LLMError:
-                    continue
+                except LLMError as single_error:
+                    if errors is not None:
+                        errors.append(str(single_error))
 
 
 def _judge(batch: list[Signal], icp: ICP, llm: LLM) -> list[Qualification]:

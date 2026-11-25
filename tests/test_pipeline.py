@@ -32,3 +32,17 @@ def test_a_failing_source_does_not_stop_the_run(store):
     )
     assert report.errors == ["broken 'q': timeout"]
     assert report.judged == 1
+
+
+def test_model_errors_are_reported_once(store):
+    from lead_agent.llm import LLMError
+
+    class Down(FakeLLM):
+        def structured(self, system, user, schema):
+            raise LLMError("Model server not reachable at http://localhost:11434/v1")
+
+    report = run(
+        ICP(product="p", customers="c"), [FakeSource([signal(1), signal(2)])], Down(), store, queries=["q"]
+    )
+    assert report.judged == 0
+    assert report.errors == ["model: Model server not reachable at http://localhost:11434/v1"]

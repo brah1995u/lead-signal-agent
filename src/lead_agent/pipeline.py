@@ -47,7 +47,11 @@ def run(
 
     pending = store.unqualified()
     progress(f"Judging {len(pending)} new signals with {llm.model}")
-    judged = list(qualify(pending, icp, llm))
+    llm_errors: list[str] = []
+    judged = list(qualify(pending, icp, llm, errors=llm_errors))
+    if llm_errors:
+        # One line per distinct problem: a missing model shows up once, not once per post.
+        report.errors += [f"model: {e}" for e in dict.fromkeys(llm_errors)]
     store.save_qualifications(judged, llm.model)
     report.judged = len(judged)
     report.leads = store.leads(min_score=icp.min_score)
